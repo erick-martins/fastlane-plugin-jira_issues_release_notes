@@ -61,11 +61,14 @@ module Fastlane
           @client = jira_client_helper
         end
 
-        def get(issues:)
+        def get(issues:, extra_fields: [])
           return [] if issues.to_a.empty?
 
+          fields = [:key, :summary, :status, :issuetype, :description]
+          fields.concat extra_fields
+
           begin
-            @client.Issue.jql("KEY IN (#{issues.join(',')})", fields: [:key, :summary, :status], validate_query: false)
+            @client.Issue.jql("KEY IN (#{issues.join(',')})", fields: fields, validate_query: false)
           rescue StandardError => e
             UI.important('Jira Client: Failed to get issue.')
             UI.important("Jira Client: Reason - #{e.message}")
