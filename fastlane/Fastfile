@@ -1,3 +1,4 @@
 lane :test do
-  jira_issues_release_notes
+  tag_prefix = 'v*'
+  jira_issues_release_notes(match: tag_prefix, debug: true)
 end
