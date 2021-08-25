@@ -4,6 +4,10 @@
 
 
 
+It generates a release note based on the issues keys and descriptions found in the commits and branch name
+
+
+
 ## Getting Started
 
 This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. To get started with `fastlane-plugin-jira_issues_release_notes`, add it to your project by running:
@@ -14,15 +18,9 @@ fastlane add_plugin jira_issues_release_notes
 
 
 
-## About jira_issues_release_notes
-
-It generates a release note based on the issues keys and descriptions found in the commits.
-
-
-
 ## Actions
 
-All actions requires some parameter to access Jira API. 
+All actions requires some parameters to access Jira API. 
 **These are the arguments the all share:**
 
 | Argument                 | Type      | Description                      | Optional | Default | Env Name                           |
@@ -37,9 +35,9 @@ All actions requires some parameter to access Jira API.
 
 ### branch_jira_issues_release_notes
 
-This action creates a changelog based on the issue key extracted from your branch name. For exemple a branch called `feature/ABC-1234-some-feature` will extract to `ABC-1234` issue key. 
+This action creates a release note based on the issue key extracted from your branch name. For example a branch called `feature/ABC-1234-some-feature` will extract the `ABC-1234` issue key. 
 
-It should be used to generate version to validate you branch's feature before it be merged. 
+It should be used to generate version to validate you branch's feature before you merge it. 
 
 **Arguments:**
 
@@ -100,7 +98,7 @@ platform :android do
     link_to_download = upload_to_s3	
 
 		release_notes = jira_issues_release_notes(
-      tag_prefix: 'Release/Android/v*',
+      tag_prefix: 'v*',
       ticket_prefix: 'ABC',
       username: ENV["FL_JIRA_USERNAME"],
       password: ENV["FL_JIRA_PASSWORD"],
@@ -123,14 +121,14 @@ end
 
 **Arguments:**
 
-| Argument           | Type                           | Description                                                | Optional | Default           | Env Name                   |
-| ------------------ | ------------------------------ | ---------------------------------------------------------- | -------- | ----------------- | -------------------------- |
-| tag_prefix         | `Regex`                        | Match prefix to find latest tag. Example: `release/ios/v*` |          |                   |                            |
-| ticket_prefix      | `String` or `Regex`            | The prefix for yours jira issues                           | ✓        | `[A_Z]+`          | `FL_FIND_TICKETS_MATCHING` |
-| tag_version_match  | `String`                       | To parse version number from tag name                      | ✓        | `/\d+\.\d+\.\d+/` |                            |
-| validated_status   | `Array`                        | List of jira issues status already validated               |          |                   | FL_JIRA_VALIDATED_STATUS   |
-| to_validate_status | `Array`                        | List of jira issues status to be validated                 |          |                   | FL_JIRA_TO_VALIDATE_STATUS |
-| format             | `slack`, `markdown` or `plain` | Defines the result format                                  | ✓        | `markdown`        |                            |
+| Argument           | Type                           | Description                                    | Optional | Default           | Env Name                   |
+| ------------------ | ------------------------------ | ---------------------------------------------- | -------- | ----------------- | -------------------------- |
+| tag_prefix         | `Regex`                        | Match prefix to find latest tag. Example: `v*` |          |                   |                            |
+| ticket_prefix      | `String` or `Regex`            | The prefix for yours jira issues               | ✓        | `[A_Z]+`          | `FL_FIND_TICKETS_MATCHING` |
+| tag_version_match  | `String`                       | To parse version number from tag name          | ✓        | `/\d+\.\d+\.\d+/` |                            |
+| validated_status   | `Array`                        | List of jira issues status already validated   |          |                   | FL_JIRA_VALIDATED_STATUS   |
+| to_validate_status | `Array`                        | List of jira issues status to be validated     |          |                   | FL_JIRA_TO_VALIDATE_STATUS |
+| format             | `slack`, `markdown` or `plain` | Defines the result format                      | ✓        | `markdown`        |                            |
 
 
 
