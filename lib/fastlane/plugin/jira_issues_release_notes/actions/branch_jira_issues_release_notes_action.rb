@@ -31,34 +31,6 @@ module Fastlane
         return ticket_not_found ticket_code unless issue
 
         generate_message_with(issue: issue)
-
-      #   tickets = tickets(commits: commits, regex: regex)
-      #   UI.important("Jira tickets: #{tickets}")
-
-      #   @jira_helper = Helper::JiraIssuesReleaseNotesHelper.jira_helper(
-      #     host: params[:host],
-      #     username: params[:username],
-      #     password: params[:password],
-      #     context_path: params[:context_path],
-      #     disable_ssl_verification: params[:disable_ssl_verification]
-      #   )
-      #   issues = @jira_helper.get(issues: tickets)
-
-      #   to_validate = issues.select { |issue| params[:to_validate_status].include?(issue.status.name) }
-      #   validated = issues.select { |issue| params[:validated_status].include?(issue.status.name) }
-
-      #   generate_changelog(to_validate: to_validate, validated: validated, format: params[:format], url: params[:build_url])
-      # end
-
-      # def self.generate_changelog(to_validate:, validated:, format:, url:)
-      #   changelog = []
-      #   changelog.concat(format_issues(label: 'Tasks to validate', issues: to_validate, format: format)) unless to_validate.empty?
-      #   changelog.concat(['']) unless changelog.to_s.empty?
-      #   changelog.concat(format_issues(label: 'Validated tasks', issues: validated, format: format)) unless validated.empty?
-      #   # changes = format_issues(issues: issues)
-      #   changelog = ['No changes included.'] if changelog.to_s.empty?
-
-      #   changelog.join("\n")
       end
 
       def self.ticket_not_found(ticket_code = "")
@@ -174,13 +146,6 @@ module Fastlane
             description:  'regex to extract ticket numbers',
             default_value: '[A-Z]+',
             optional: true
-          ),
-          FastlaneCore::ConfigItem.new(
-            key: :build_url,
-            env_name: 'FL_RELEASE_NOTES_BUILD_URL',
-            description:  'Link to the ci build',
-            optional: true,
-            default_value: ENV['BUILD_URL']
           ),
           FastlaneCore::ConfigItem.new(
             key: :format,
