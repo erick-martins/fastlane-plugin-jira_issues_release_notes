@@ -41,11 +41,11 @@ It should be used to generate version to validate you branch's feature before yo
 
 **Arguments:**
 
-| Argument      | Type                           | Description                                                  | Optional | Default              | Env Name                   |
-| ------------- | ------------------------------ | ------------------------------------------------------------ | -------- | -------------------- | -------------------------- |
-| ticket_prefix | `String` or `Regex`            | The prefix for yours jira issues                             | ✓        | `[A_Z]+`             | `FL_FIND_TICKETS_MATCHING` |
-| extra_fields  | `Hash`                         | A hash of extra Jira fields to display.<br />It should be a hash with key as the label for the key and value as the symbol representing the jira's key:<br />Example: `{ "My Custom Field" => :customfield_1 }` | ✓        | Empty Hash<br />`{}` |                            |
-| format        | `slack`, `markdown` or `plain` | Defines the result format                                    | ✓        | `markdown`           |                            |
+| Argument      | Type                                    | Description                                                  | Optional | Default              | Env Name                   |
+| ------------- | --------------------------------------- | ------------------------------------------------------------ | -------- | -------------------- | -------------------------- |
+| ticket_prefix | `String` or `Regex`                     | The prefix for yours jira issues                             | ✓        | `[A_Z]+`             | `FL_FIND_TICKETS_MATCHING` |
+| extra_fields  | `Hash`                                  | A hash of extra Jira fields to display.<br />It should be a hash with key as the label for the key and value as the symbol representing the jira's key:<br />Example: `{ "My Custom Field" => :customfield_1 }` | ✓        | Empty Hash<br />`{}` |                            |
+| format        | `slack`, `markdown` , `html` or `plain` | Defines the result format                                    | ✓        | `markdown`           |                            |
 
 **Usage example:**
 
@@ -121,14 +121,14 @@ end
 
 **Arguments:**
 
-| Argument           | Type                           | Description                                    | Optional | Default           | Env Name                   |
-| ------------------ | ------------------------------ | ---------------------------------------------- | -------- | ----------------- | -------------------------- |
-| tag_prefix         | `Regex`                        | Match prefix to find latest tag. Example: `v*` |          |                   |                            |
-| ticket_prefix      | `String` or `Regex`            | The prefix for yours jira issues               | ✓        | `[A_Z]+`          | `FL_FIND_TICKETS_MATCHING` |
-| tag_version_match  | `String`                       | To parse version number from tag name          | ✓        | `/\d+\.\d+\.\d+/` |                            |
-| validated_status   | `Array`                        | List of jira issues status already validated   |          |                   | FL_JIRA_VALIDATED_STATUS   |
-| to_validate_status | `Array`                        | List of jira issues status to be validated     |          |                   | FL_JIRA_TO_VALIDATE_STATUS |
-| format             | `slack`, `markdown` or `plain` | Defines the result format                      | ✓        | `markdown`        |                            |
+| Argument           | Type                                    | Description                                    | Optional | Default           | Env Name                   |
+| ------------------ | --------------------------------------- | ---------------------------------------------- | -------- | ----------------- | -------------------------- |
+| tag_prefix         | `Regex`                                 | Match prefix to find latest tag. Example: `v*` |          |                   |                            |
+| ticket_prefix      | `String` or `Regex`                     | The prefix for yours jira issues               | ✓        | `[A_Z]+`          | `FL_FIND_TICKETS_MATCHING` |
+| tag_version_match  | `String`                                | To parse version number from tag name          | ✓        | `/\d+\.\d+\.\d+/` |                            |
+| validated_status   | `Array`                                 | List of jira issues status already validated   |          |                   | FL_JIRA_VALIDATED_STATUS   |
+| to_validate_status | `Array`                                 | List of jira issues status to be validated     |          |                   | FL_JIRA_TO_VALIDATE_STATUS |
+| format             | `slack`, `markdown` , `html` or `plain` | Defines the result format                      | ✓        | `markdown`        |                            |
 
 
 

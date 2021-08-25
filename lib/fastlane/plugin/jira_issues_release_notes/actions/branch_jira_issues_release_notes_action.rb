@@ -10,6 +10,7 @@ module Fastlane
 
         @format = params[:format]
         @extra_fields = params[:extra_fields]
+        @format_line_break = @format === 'html' ? '<br />' : "\n"
 
         ticket_code = regex.match branch
 
@@ -47,7 +48,6 @@ module Fastlane
           last_commit[:message]
         ].join("\n")
       end
-
       def self.style_text(text:, style:)
         # formats the text according to the style we're looking to use
 
@@ -59,24 +59,30 @@ module Fastlane
             "# #{text}"
           when "slack"
             "*#{text}*"
+          when "html"
+            "<h1>#{text}</h1>"
           else
             text
           end
         when "heading"
-          case format
+          case @format
           when "markdown"
             "### #{text}"
           when "slack"
             "*#{text}*"
+          when "html"
+            "<h3>#{text}</h3>"
           else
             "#{text}:"
           end
         when "bold"
-          case format
+          case @format
           when "markdown"
             "**#{text}**"
           when "slack"
             "*#{text}*"
+          when "html"
+            "<strong>#{text}</strong>"
           else
             text
           end
@@ -99,7 +105,7 @@ module Fastlane
             extra.flatten!
           ]
           .flatten!
-          .join("\n")
+          .join(@format_line_break)
         when "markdown"
           extra = @extra_fields.map { |key, value| ["", "**► #{key.to_s}**", issue.attrs["fields"][value.to_s]] }
           [
@@ -108,7 +114,16 @@ module Fastlane
             extra.flatten!
           ]
           .flatten!
-          .join("\n")
+          .join(@format_line_break)
+        when "html"
+          extra = @extra_fields.map { |key, value| ["", "<strong>&#9658; #{key.to_s}</strong>", issue.attrs["fields"][value.to_s]] }
+          [
+            "<strong>&#9658; #{issue_type}: <a href=\"#{link}\" target=\"_blank\">#{issue.summary}</a></strong> (#{status})", 
+            issue.description, 
+            extra.flatten!
+          ]
+          .flatten!
+          .join(@format_line_break)
         else
           extra = @extra_fields.map { |key, value| ["", "► #{key.to_s}", issue.attrs["fields"][value.to_s]] }
           [
@@ -117,7 +132,7 @@ module Fastlane
             extra.flatten!
           ]
           .flatten!
-          .join("\n")
+          .join(@format_line_break)
         end
       end
 
@@ -149,11 +164,11 @@ module Fastlane
           ),
           FastlaneCore::ConfigItem.new(
             key: :format,
-            description: "You can use either markdown, slack or plain",
+            description: "You can use either markdown, slack, html or plain",
             default_value: "markdown",
             optional: true,
             verify_block: proc do |value|
-              UI.user_error!("Invalid format! You can use either markdown, slack or plain") unless ['markdown', 'slack', 'plain'].include?(value)
+              UI.user_error!("Invalid format! You can use either markdown, slack, html or plain") unless ['markdown', 'html', 'slack', 'plain'].include?(value)
             end
           ),
           FastlaneCore::ConfigItem.new(

@@ -27,6 +27,10 @@ module Fastlane
       end
 
       def self.run(params)
+
+        @format = params[:format]
+        @format_line_break = @format === 'html' ? '<br />' : "\n"
+
         tag = get_last_tag(
           match: params[:tag_prefix],
           debug: params[:debug]
@@ -80,49 +84,55 @@ module Fastlane
         to_validate = issues.select { |issue| params[:to_validate_status].include?(issue.status.name) }
         validated = issues.select { |issue| params[:validated_status].include?(issue.status.name) }
 
-        generate_changelog(to_validate: to_validate, validated: validated, format: params[:format])
+        generate_changelog(to_validate: to_validate, validated: validated)
       end
 
-      def self.generate_changelog(to_validate:, validated:, format:)
+      def self.generate_changelog(to_validate:, validated:)
         changelog = []
-        changelog.concat(format_issues(label: 'Tasks to validate', issues: to_validate, format: format)) unless to_validate.empty?
+        changelog.concat(format_issues(label: 'Tasks to validate', issues: to_validate)) unless to_validate.empty?
         changelog.concat(['']) unless changelog.to_s.empty?
-        changelog.concat(format_issues(label: 'Validated tasks', issues: validated, format: format)) unless validated.empty?
+        changelog.concat(format_issues(label: 'Validated tasks', issues: validated)) unless validated.empty?
         # changes = format_issues(issues: issues)
         changelog = ['No changes included.'] if changelog.to_s.empty?
 
-        changelog.join("\n")
+        changelog.join(@format_line_break)
       end
 
-      def self.style_text(text:, format:, style:)
+      def self.style_text(text:, style:)
         # formats the text according to the style we're looking to use
 
         # Skips all styling
         case style
         when "title"
-          case format
+          case @format
           when "markdown"
             "# #{text}"
           when "slack"
             "*#{text}*"
+          when "html"
+            "<h1>#{text}</h1>"
           else
             text
           end
         when "heading"
-          case format
+          case @format
           when "markdown"
             "### #{text}"
           when "slack"
             "*#{text}*"
+          when "html"
+            "<h3>#{text}</h3>"
           else
             "#{text}:"
           end
         when "bold"
-          case format
+          case @format
           when "markdown"
             "**#{text}**"
           when "slack"
             "*#{text}*"
+          when "html"
+            "<strong>#{text}</strong>"
           else
             text
           end
@@ -131,23 +141,25 @@ module Fastlane
         end
       end
 
-      def self.format_issue_link(issue:, format:)
+      def self.format_issue_link(issue:)
         # formats the link according to the output format we need
-
-        case format
+        link = @jira_helper.url(issue: issue)
+        case @format
         when "slack"
-          "*<#{@jira_helper.url(issue: issue)}|#{issue.key}>*: #{issue.summary}"
+          "*<#{link}|#{issue.key}>*: #{issue.summary}"
         when "markdown"
-          "- **[#{issue.key}](#{@jira_helper.url(issue: issue)})**: #{issue.summary}"
+          "- **[#{issue.key}](#{link})**: #{issue.summary}"
+        when "html"
+          "&nbsp;&nbsp;- <strong><a href=\"#{link}\" target=\"_blank\">#{issue.key}</a><strong>: #{issue.summary}"
         else
-          "- #{issue.key}: #{issue.summary} (#{@jira_helper.url(issue: issue)})"
+          "- #{issue.key}: #{issue.summary} (#{link})"
         end
       end
 
-      def self.format_issues(label:, issues:, format:)
+      def self.format_issues(label:, issues:)
         [
-          style_text(text: "► #{label}", style: 'heading', format: format),
-          issues.map { |issue| format_issue_link(issue: issue, format: format) }
+          style_text(text: "► #{label}", style: 'heading'),
+          issues.map { |issue| format_issue_link(issue: issue) }
         ].flatten!
       end
 
@@ -213,11 +225,11 @@ module Fastlane
           ),
           FastlaneCore::ConfigItem.new(
             key: :format,
-            description: "You can use either markdown, slack or plain",
+            description: "You can use either markdown, slack, html or plain",
             default_value: "markdown",
             optional: true,
             verify_block: proc do |value|
-              UI.user_error!("Invalid format! You can use either markdown, slack or plain") unless ['markdown', 'slack', 'plain'].include?(value)
+              UI.user_error!("Invalid format! You can use either markdown, slack, html or plain") unless ['markdown', 'html', 'slack', 'plain'].include?(value)
             end
           ),
 
