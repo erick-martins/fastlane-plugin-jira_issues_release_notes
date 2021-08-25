@@ -80,10 +80,10 @@ module Fastlane
         to_validate = issues.select { |issue| params[:to_validate_status].include?(issue.status.name) }
         validated = issues.select { |issue| params[:validated_status].include?(issue.status.name) }
 
-        generate_changelog(to_validate: to_validate, validated: validated, format: params[:format], url: params[:build_url])
+        generate_changelog(to_validate: to_validate, validated: validated, format: params[:format])
       end
 
-      def self.generate_changelog(to_validate:, validated:, format:, url:)
+      def self.generate_changelog(to_validate:, validated:, format:)
         changelog = []
         changelog.concat(format_issues(label: 'Tasks to validate', issues: to_validate, format: format)) unless to_validate.empty?
         changelog.concat(['']) unless changelog.to_s.empty?
@@ -198,13 +198,6 @@ module Fastlane
             default_value: '\d+\.\d+\.\d+'
           ),
           FastlaneCore::ConfigItem.new(
-            key: :build_url,
-            env_name: 'FL_RELEASE_NOTES_BUILD_URL',
-            description:  'Link to the ci build',
-            optional: true,
-            default_value: ENV['BUILD_URL']
-          ),
-          FastlaneCore::ConfigItem.new(
             key: :validated_status,
             env_name: 'FL_JIRA_VALIDATED_STATUS',
             description:  'List of jira issues status already validated',
@@ -238,7 +231,7 @@ module Fastlane
           FastlaneCore::ConfigItem.new(
             key: :password,
             env_name: 'FL_JIRA_PASSWORD',
-            description:  'Jira user',
+            description:  'Jira user password',
             optional: false
           ),
           FastlaneCore::ConfigItem.new(
