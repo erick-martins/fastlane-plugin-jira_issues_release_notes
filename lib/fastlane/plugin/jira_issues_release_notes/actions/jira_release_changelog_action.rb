@@ -44,8 +44,8 @@ module Fastlane
         group_key_for_any = nil
 
         grouped_by_types.each do |key, value|
-          matched_issues = issues.filter {|issue| value.include?(issue.issuetype.name) }
-          not_matched_issues = issues.filter {|issue| !value.include?(issue.issuetype.name) }
+          matched_issues = issues.select {|issue| value.include?(issue.issuetype.name) }
+          not_matched_issues = issues.select {|issue| !value.include?(issue.issuetype.name) }
 
           grouped_issues[key] = matched_issues
 
