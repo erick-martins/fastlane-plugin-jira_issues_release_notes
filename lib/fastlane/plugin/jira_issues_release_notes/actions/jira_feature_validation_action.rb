@@ -3,16 +3,18 @@ require_relative '../helper/jira_issues_release_notes_helper'
 
 module Fastlane
   module Actions
-    class BranchJiraIssuesReleaseNotesAction < Action
+    class JiraFeatureValidationAction < Action
       def self.run(params)
         branch = other_action.git_branch
-        regex = Regexp.new("(#{params[:ticket_prefix]}-\\d+)")
+        ticket_key = Helper::JiraIssuesReleaseNotesHelper.extract_key_from_branch(
+          branch: branch,
+          ticket_prefix: params[:ticket_prefix]
+        )
 
         @format = params[:format]
         @extra_fields = params[:extra_fields]
         @format_line_break = @format === 'html' ? '<br />' : "\n"
 
-        ticket_code = regex.match branch
 
         return ticket_not_found unless ticket_code
 
@@ -21,6 +23,7 @@ module Fastlane
 
         @jira_helper = Helper::JiraIssuesReleaseNotesHelper.jira_helper(
           host: params[:host],
+          api_version: params[:api_version],
           username: params[:username],
           password: params[:password],
           context_path: params[:context_path],
@@ -43,53 +46,12 @@ module Fastlane
         header_text = ticket_code ? "😅 Jira issue with key '#{ticket_code}' could not be found" : "😅 Jira issue could not be detected"
 
         return [
-          style_text(text: header_text, style: 'heading'),
-          style_text(text: "► Latest Commit:", style: 'bold'),
+          Helper::JiraIssuesReleaseNotesHelper.style_text(text: header_text, style: 'heading'),
+          Helper::JiraIssuesReleaseNotesHelper.style_text(text: "► Latest Commit:", style: 'bold'),
           last_commit[:message]
         ].join("\n")
       end
-      def self.style_text(text:, style:)
-        # formats the text according to the style we're looking to use
-
-        # Skips all styling
-        case style
-        when "title"
-          case @format
-          when "markdown"
-            "# #{text}"
-          when "slack"
-            "*#{text}*"
-          when "html"
-            "<h1>#{text}</h1>"
-          else
-            text
-          end
-        when "heading"
-          case @format
-          when "markdown"
-            "### #{text}"
-          when "slack"
-            "*#{text}*"
-          when "html"
-            "<h3>#{text}</h3>"
-          else
-            "#{text}:"
-          end
-        when "bold"
-          case @format
-          when "markdown"
-            "**#{text}**"
-          when "slack"
-            "*#{text}*"
-          when "html"
-            "<strong>#{text}</strong>"
-          else
-            text
-          end
-        else
-          text # catchall, shouldn't be needed
-        end
-      end
+      
 
       def self.generate_message_with(issue:)
         link = @jira_helper.url(issue: issue)
@@ -197,6 +159,13 @@ module Fastlane
             env_name: 'FL_JIRA_HOST',
             description:  'Jira location',
             optional: false
+          ),
+          FastlaneCore::ConfigItem.new(
+            key: :api_version,
+            env_name: 'FL_JIRA_API_VERSION',
+            description:  'Jira api version',
+            default_value: '2',
+            optional: true,
           ),
           FastlaneCore::ConfigItem.new(
             key: :context_path,

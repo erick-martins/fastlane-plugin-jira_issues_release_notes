@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   # since this would cause a circular dependency
 
   # spec.add_dependency 'your-dependency', '~> 1.0.0'
-  spec.add_runtime_dependency('jira-ruby', '~> 1.0')
+  spec.add_runtime_dependency('zk-jira-ruby', '~> 2.1')
 
   spec.add_development_dependency('bundler')
   spec.add_development_dependency('fastlane', '>= 2.99.0')
